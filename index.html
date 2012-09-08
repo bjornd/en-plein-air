@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>En Plein Air</title>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+</head>
+<body>
+  <video autoplay width="400" height="300"></video>
+  <canvas width="400" height="300"></canvas>
+
+  <script>
+    $(function(){
+      var video = document.querySelector('video'),
+          canvas = document.querySelector('canvas'),
+          ctx = canvas.getContext('2d'),
+          onFailSoHard = function(e) {
+            console.log('Reeeejected!', e);
+          };
+
+      video.addEventListener('click', function(){
+        ctx.drawImage(video, 0, 0, 400, 300);
+      }, false);
+
+      navigator.webkitGetUserMedia({video: true}, function(localMediaStream) {
+        video.src = window.webkitURL.createObjectURL(localMediaStream);
+      }, onFailSoHard);
+    });
+  </script>
+</body>
+</html>
