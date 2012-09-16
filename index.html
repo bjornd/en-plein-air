@@ -3,152 +3,46 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>En Plein Air</title>
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+  <style>
+    * {
+      outline: none;
+    }
+  </style>
+  <script src="http://127.0.0.1:3000/seed"></script>
+  <script src="yui.config.js"></script>
+  <script src="yui.app.js"></script>
 </head>
-<body>
-  <video autoplay width="400" height="300"></video>
-  <canvas width="400" height="300"></canvas>
-  <div id="colors"></div>
+<body class="yui3-skin-sam">
+  <div id="app-menu">
+    <div id="app-menu-buttons">
+      <button class="radio" data-route="create">Create palette</button>
+      <button class="radio" data-route="history">History</button>
+      <button class="radio" data-route="palettes">Palettes</button>
+    </div>
+  </div>
+  <div id="app-content"></div>
 
-  <script>
-    var canvas = $('canvas')[0];
-        ctx = canvas.getContext('2d');
+  <script id="tpl-create-view" type="text/x-handlebars-template">
+    <ul>
+      <li><label>Right from your camera <input value="Make shot" type="button" class="app-create-view-show-camera"/></label></li>
+      <li><label>From local file <input type="file"/></label></li>
+      <li>
+        <label>By image URL <input type="text" class="app-create-view-url" value="images/fish.jpeg"/></label>
+        <input value="Create palette" type="button" class="app-create-view-create-from-url"/>
+      </li>
+    </ul>
+    <div class="app-create-view-palette">
 
-    function getContextColors(ctx) {
-      var data = ctx.getImageData(0, 0, 400, 300).data,
-          colors = {};
+    </div>
+  </script>
 
-      for (i = 0; i < data.length; i+=4) {
-        colors[data[i]*256*256 + data[i+1]*256 + data[i+2]] = [data[i], data[i+1], data[i+2]];
-      }
-      return colors;
-    }
-
-    function getDistance(c1, c2) {
-      var i,
-          d = 0;
-
-      for (i = 0; i < c1.length; i++) {
-        d += (c2[i] - c1[i])*(c2[i] - c1[i]);
-      }
-      return Math.sqrt(d);
-    }
-
-    function getMean(data) {
-      var mean = [],
-          i,
-          j;
-
-      for (i = 0; i < data[0].length; i++) {
-        mean[i] = 0;
-      }
-      for (i = 0; i < data.length; i++) {
-        for (j = 0; j < data[i].length; j++) {
-          mean[j] += data[i][j];
-        }
-      }
-      for (i = 0; i < data[0].length; i++) {
-        mean[i] = Math.floor(mean[i] / data.length);
-      }
-      return mean;
-    }
-
-    function getInitialData(data, k) {
-      var initial = [],
-          i;
-
-      for (i = 0; i < k; i++) {
-        initial.push(data[Math.floor(Math.random()*data.length)]);
-      }
-      return initial;
-    }
-
-    function kMeans(data, k) {
-      var centroids = getInitialData(data, k),
-          clusterAssment = [],
-          clusterChanged,
-          i,
-          j,
-          minDist,
-          minIndex,
-          dist,
-          pointsInCluster;
-
-      do {
-        clusterChanged = false;
-        for (i = 0; i < data.length; i++) {
-          minDist = Number.POSITIVE_INFINITY;
-          minIndex = -1;
-          for (j = 0; j < k; j++) {
-            dist = getDistance(centroids[j], data[i]);
-            if (dist < minDist) {
-              minDist = dist;
-              minIndex = j;
-            }
-          }
-          if (clusterAssment[i] != minIndex) {
-            clusterChanged = true;
-          }
-          clusterAssment[i] = minIndex;
-        }
-        for (i = 0; i < k; i++) {
-          pointsInCluster = [];
-          for (j = 0; j < clusterAssment.length; j++) {
-            if (clusterAssment[j] === i) {
-              pointsInCluster.push(data[j]);
-            }
-          }
-          if (pointsInCluster.length > 0) {
-            centroids[i] = getMean(pointsInCluster);
-          }
-        }
-      } while (clusterChanged);
-      return {centroids: centroids, clusters: clusterAssment};
-    }
-
-    $(function(){
-      var video = document.querySelector('video'),
-          canvas = document.querySelector('canvas'),
-          ctx = canvas.getContext('2d'),
-          onFailSoHard = function(e) {
-            console.log('Reeeejected!', e);
-          };
-
-      video.addEventListener('click', function(){
-        var colors,
-            i,
-            colorsArray = [],
-            result,
-            key;
-
-        ctx.drawImage(video, 0, 0, 400, 300);
-        colors = getContextColors(ctx);
-        for (key in colors) {
-          colorsArray.push(colors[key]);
-        }
-        result = kMeans(colorsArray, 6);
-        result.centroids.sort(function(a, b){
-          var av = a[0]*256*256 + a[1]*256 + a[2],
-              bv = b[0]*256*256 + b[1]*256 + b[2]
-
-          return bv - av;
-        });
-        $('#colors').empty();
-        for (i = 0; i < result.centroids.length; i++) {
-          $('<div/>').css({
-            width: 64,
-            height: 64,
-            background: 'rgb('+result.centroids[i].join(',')+')',
-            float: 'left'
-          }).appendTo($('#colors'));
-        }
-        console.timeEnd('cluster');
-      }, false);
-
-      navigator.webkitGetUserMedia({video: true}, function(localMediaStream) {
-        video.src = window.webkitURL.createObjectURL(localMediaStream);
-      }, onFailSoHard);
-    });
+  <script id="tpl-palette" type="text/x-handlebars-template">
+    <div>
+      <img src="{{image.url}}"/><br/>
+      {{#colors}}
+        <div style="width: 50px; height: 50px; background: rgb({{.}}); display: inline-block"></div>
+      {{/colors}}
+    </div>
   </script>
 </body>
 </html>
