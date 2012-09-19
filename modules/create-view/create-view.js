@@ -7,9 +7,15 @@ YUI.add('create-view', function (Y) {
           cameraDialog = new Y.CameraDialog();
 
       container.setHTML(template());
+
       container.one('.app-create-view-show-camera').on('click', function(){
-        cameraDialog.show(function(result){
-          console.log(result);
+        cameraDialog.show(function(canvas){
+          container.one('.app-create-view-palette').setHTML(paletteTemplate({
+            image: {
+              url: canvas.toDataURL()
+            },
+            colors: Y.Colors.getImagePalette(canvas)
+          }));
         });
       });
 
@@ -28,7 +34,7 @@ YUI.add('create-view', function (Y) {
           ctx.drawImage(image.getDOMNode(), 0, 0, width, height);
           container.one('.app-create-view-palette').setHTML(paletteTemplate({
             image: {
-              url: url
+              url: canvas.toDataURL()
             },
             colors: Y.Colors.getImagePalette(canvas)
           }));

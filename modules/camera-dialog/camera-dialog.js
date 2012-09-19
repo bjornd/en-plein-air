@@ -52,10 +52,16 @@ YUI.add('camera-dialog', function (Y) {
   };
 
   Y.CameraDialog.prototype.onOK = function(e) {
+    var canvas = Y.Node.create('<canvas></canvas>').getDOMNode();
+
+    canvas.width = 400;
+    canvas.height = 300;
+    canvas.getContext('2d').drawImage(this.videoElement.getDOMNode(), 0, 0, 400, 300)
+
     e.preventDefault();
     this.hide();
     if (this.callback){
-       this.callback('result');
+       this.callback( canvas );
     }
     this.callback = false;
   };
