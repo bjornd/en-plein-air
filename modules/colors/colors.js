@@ -1,14 +1,8 @@
 YUI.add('colors', function (Y) {
   Y.Colors = {
     getImagePalette: function(canvas){
-      var colors = getContextColors(canvas.getContext('2d')),
-          colorsArray = [],
-          key;
+      var result = kMeans(getContextColors(canvas.getContext('2d')), 6);
 
-      for (key in colors) {
-        colorsArray.push(colors[key]);
-      }
-      result = kMeans(colorsArray, 6);
       result.centroids.sort(function(a, b){
         var av = a[0]*256*256 + a[1]*256 + a[2],
             bv = b[0]*256*256 + b[1]*256 + b[2]
@@ -22,10 +16,10 @@ YUI.add('colors', function (Y) {
 
   function getContextColors(ctx) {
     var data = ctx.getImageData(0, 0, 400, 300).data,
-        colors = {};
+        colors = [];
 
     for (i = 0; i < data.length; i+=4) {
-      colors[data[i]*256*256 + data[i+1]*256 + data[i+2]] = [data[i], data[i+1], data[i+2]];
+      colors.push([data[i], data[i+1], data[i+2]]);
     }
     return colors;
   };
