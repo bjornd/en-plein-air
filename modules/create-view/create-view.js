@@ -1,51 +1,75 @@
 YUI.add('create-view', function (Y) {
   Y.CreateView = Y.Base.create('CreateView', Y.View, [], {
+    maxImageWidth: 400,
+    maxImageHeight: 400,
+
     render: function () {
       var template = Y.Handlebars.compile( Y.one('#tpl-create-view').getHTML() ),
-          paletteTemplate = Y.Handlebars.compile( Y.one('#tpl-palette').getHTML() ),
           container = this.get('container'),
-          cameraDialog = new Y.CameraDialog();
+          cameraDialog = new Y.CameraDialog(),
+          that = this;
+
+      this.paletteTemplate = Y.Handlebars.compile( Y.one('#tpl-palette').getHTML() );
 
       container.setHTML(template());
 
       container.one('.app-create-view-show-camera').on('click', function(){
         cameraDialog.show(function(canvas){
-          container.one('.app-create-view-palette').setHTML(paletteTemplate({
+          container.one('.app-create-view-palette').setHTML(that.paletteTemplate({
             image: {
               url: canvas.toDataURL()
             },
             colors: Y.Colors.getImagePalette(canvas)
           }));
         });
+      });
+
+      container.one('.app-create-view-file-input').on('change', function(){
+        var file = this.getDOMNode().files[0];
+
+        that.createPaletteFromImageUrl( window.webkitURL.createObjectURL(file) );
       });
 
       container.one('.app-create-view-create-from-url').on('click', function(){
-        var url = container.one('.app-create-view-url').get('value'),
-            image = Y.Node.create('<img/>'),
-            canvas = Y.Node.create('<canvas></canvas>').getDOMNode(),
-            ctx = canvas.getContext('2d');
-
-        image.on('load', function(){
-          var width = image.get('width'),
-              height = image.get('height');
-
-          canvas.width = width;
-          canvas.height = height;
-          ctx.drawImage(image.getDOMNode(), 0, 0, width, height);
-          container.one('.app-create-view-palette').setHTML(paletteTemplate({
-            image: {
-              url: canvas.toDataURL()
-            },
-            colors: Y.Colors.getImagePalette(canvas)
-          }));
-        })
-        image.on('error', function(){
-          console.log('image failed to load');
-        });
-        image.set('src', url);
+        that.createPaletteFromImageUrl( container.one('.app-create-view-url').get('value') );
       });
 
       return this;
+    },
+
+    createPaletteFromImageUrl: function(imageUrl){
+      var image = Y.Node.create('<img/>'),
+          canvas = Y.Node.create('<canvas></canvas>').getDOMNode(),
+          ctx = canvas.getContext('2d'),
+          that = this;
+
+      image.on('load', function(){
+        var width = image.get('width'),
+            height = image.get('height');
+
+        if (width > that.maxImageWidth || height > that.maxImageHeight) {
+          if (width / height > that.maxImageWidth / that.maxImageHeight) {
+            height = height * that.macImageWidth / width;
+            width = that.maxImageWidth;
+          } else {
+            width = width * that.maxImageHeight / height;
+            height = that.maxImageHeight;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage(image.getDOMNode(), 0, 0, width, height);
+        that.get('container').one('.app-create-view-palette').setHTML(that.paletteTemplate({
+          image: {
+            url: canvas.toDataURL()
+          },
+          colors: Y.Colors.getImagePalette(canvas)
+        }));
+      });
+      image.on('error', function(){
+        console.log('image failed to load');
+      });
+      image.set('src', imageUrl);
     }
   });
 }, '0.0.1', {

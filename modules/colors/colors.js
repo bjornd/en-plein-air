@@ -15,7 +15,7 @@ YUI.add('colors', function (Y) {
   };
 
   function getContextColors(ctx) {
-    var data = ctx.getImageData(0, 0, 400, 300).data,
+    var data = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height).data,
         colors = [];
 
     for (i = 0; i < data.length; i+=4) {

@@ -8,7 +8,7 @@
       outline: none;
     }
   </style>
-  <script src="http://127.0.0.1:3000/seed"></script>
+  <script src="http://192.168.0.10:3000/seed"></script>
   <script src="yui.config.js"></script>
   <script src="yui.app.js"></script>
 </head>
@@ -23,9 +23,10 @@
   <div id="app-content"></div>
 
   <script id="tpl-create-view" type="text/x-handlebars-template">
+    <img class="img"/>
     <ul>
       <li><label>Right from your camera <input value="Make shot" type="button" class="app-create-view-show-camera"/></label></li>
-      <li><label>From local file <input type="file"/></label></li>
+      <li><label>From local file <input class="app-create-view-file-input" type="file"/></label></li>
       <li>
         <label>By image URL <input type="text" class="app-create-view-url" value="images/fish.jpeg"/></label>
         <input value="Create palette" type="button" class="app-create-view-create-from-url"/>

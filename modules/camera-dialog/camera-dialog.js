@@ -45,6 +45,7 @@ YUI.add('camera-dialog', function (Y) {
 
     navigator.webkitGetUserMedia({video: true}, function(localMediaStream) {
       that.userMediaReady = true;
+      console.log(that.userMediaReady);
       that.videoElement.set('src', window.webkitURL.createObjectURL(localMediaStream));
     }, function(e) {
       console.log('getUserMedia rejected', e);
