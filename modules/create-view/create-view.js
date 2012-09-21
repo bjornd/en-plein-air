@@ -15,12 +15,7 @@ YUI.add('create-view', function (Y) {
 
       container.one('.app-create-view-show-camera').on('click', function(){
         cameraDialog.show(function(canvas){
-          container.one('.app-create-view-palette').setHTML(that.paletteTemplate({
-            image: {
-              url: canvas.toDataURL()
-            },
-            colors: Y.Colors.getImagePalette(canvas)
-          }));
+          that.createPaletteFromCanvas(canvas);
         });
       });
 
@@ -35,6 +30,30 @@ YUI.add('create-view', function (Y) {
       });
 
       return this;
+    },
+
+    setImage: function(url){
+      this.paletteImageUrl = url;
+      this.renderPalette();
+    },
+
+    setPalette: function(palette){
+      this.paletteColors = palette;
+      this.renderPalette();
+    },
+
+    renderPalette: function(){
+      this.get('container').one('.app-create-view-palette').setHTML(this.paletteTemplate({
+        image: {
+          url: this.paletteImageUrl || ''
+        },
+        colors: this.paletteColors || []
+      }));
+    },
+
+    createPaletteFromCanvas: function(canvas){
+      this.setImage(canvas.toDataURL());
+      this.setPalette(Y.Colors.getImagePalette(canvas));
     },
 
     createPaletteFromImageUrl: function(imageUrl){
@@ -59,12 +78,7 @@ YUI.add('create-view', function (Y) {
         canvas.width = width;
         canvas.height = height;
         ctx.drawImage(image.getDOMNode(), 0, 0, width, height);
-        that.get('container').one('.app-create-view-palette').setHTML(that.paletteTemplate({
-          image: {
-            url: canvas.toDataURL()
-          },
-          colors: Y.Colors.getImagePalette(canvas)
-        }));
+        that.createPaletteFromCanvas(canvas);
       });
       image.on('error', function(){
         console.log('image failed to load');
