@@ -68,7 +68,7 @@ YUI.add('create-view', function (Y) {
 
         if (width > that.maxImageWidth || height > that.maxImageHeight) {
           if (width / height > that.maxImageWidth / that.maxImageHeight) {
-            height = height * that.macImageWidth / width;
+            height = height * that.maxImageWidth / width;
             width = that.maxImageWidth;
           } else {
             width = width * that.maxImageHeight / height;
