@@ -1,7 +1,9 @@
 YUI.add('colors', function (Y) {
   Y.Colors = {
     getImagePalette: function(canvas){
-      var result = kMeans(getContextColors(canvas.getContext('2d')), 6);
+      console.time('kMeans');
+      var result = biKMeans(getContextColors(canvas.getContext('2d')), 6);
+      console.timeEnd('kMeans');
 
       result.centroids.sort(function(a, b){
         var av = a[0]*256*256 + a[1]*256 + a[2],
@@ -18,7 +20,7 @@ YUI.add('colors', function (Y) {
     var data = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height).data,
         colors = [];
 
-    for (i = 0; i < data.length; i+=4) {
+    for (i = 0; i < data.length; i+=4 ) {
       colors.push([data[i], data[i+1], data[i+2]]);
     }
     return colors;
@@ -58,14 +60,86 @@ YUI.add('colors', function (Y) {
         i;
 
     for (i = 0; i < k; i++) {
-      initial.push(data[Math.floor(Math.random()*data.length)]);
+      initial.push(data[Math.round(data.length / 2 * i)]);
     }
     return initial;
+  };
+
+  function getSum(a){
+    var i,
+        sum = 0;
+
+    for (i = 0; i < a.length; i++) {
+      sum += a[i];
+    }
+    return sum;
+  };
+
+  function biKMeans(data, k) {
+    var clusterAssment = [],
+        i,
+        j,
+        centroids = [],
+        sseLowest,
+        pointsInCluster,
+        pointsNotInCluster,
+        kMeansResult,
+        sseSplit,
+        sseNotSplit,
+        errors = [],
+        bestCentToSplit,
+        bestNewCents,
+        bestClustAss,
+        bestErrors;
+
+    centroids[0] = getMean(data);
+    for (i = 0; i < data.length; i++) {
+      clusterAssment[i] = 0;
+      errors[i] = getDistance(centroids[0], data[i]);
+    }
+    while (centroids.length < k) {
+      sseLowest = Number.POSITIVE_INFINITY;
+      for (i = 0; i < centroids.length; i++) {
+        pointsInCluster = [];
+        pointsNotInCluster = [];
+        for (j = 0; j < clusterAssment.length; j++) {
+          if (clusterAssment[j] === i) {
+            pointsInCluster.push(data[j]);
+          }
+        }
+        kMeansResult = kMeans(pointsInCluster, 2);
+        sseSplit = getSum(kMeansResult.errors);
+        sseNotSplit = 0;
+        for (j = 0; j < clusterAssment.length; j++) {
+          if (clusterAssment[j] != i) {
+            sseNotSplit += errors[j];
+          }
+        }
+        if (sseSplit + sseNotSplit < sseLowest) {
+          bestCentToSplit = i;
+          bestNewCents = kMeansResult.centroids;
+          bestClustAss = kMeansResult.clusters;
+          bestErrors = kMeansResult.errors;
+          sseLowest = sseSplit + sseNotSplit;
+        }
+      }
+      for (i = 0, j = 0; i < clusterAssment.length; i++) {
+        if (clusterAssment[i] == bestCentToSplit) {
+          clusterAssment[i] = bestClustAss[j] == 0 ? bestCentToSplit : centroids.length;
+          errors[i] = bestErrors[j];
+          j++;
+        }
+      }
+      centroids[bestCentToSplit] = bestNewCents[0];
+      centroids.push(bestNewCents[1]);
+    }
+    return {centroids: centroids, clusters: clusterAssment, errors: errors};
   };
 
   function kMeans(data, k) {
     var centroids = getInitialData(data, k),
         clusterAssment = [],
+        errors = [],
         clusterChanged,
         i,
         j,
@@ -90,6 +164,7 @@ YUI.add('colors', function (Y) {
           clusterChanged = true;
         }
         clusterAssment[i] = minIndex;
+        errors[i] = minDist*minDist;
       }
       for (i = 0; i < k; i++) {
         pointsInCluster = [];
@@ -103,6 +178,6 @@ YUI.add('colors', function (Y) {
         }
       }
     } while (clusterChanged);
-    return {centroids: centroids, clusters: clusterAssment};
+    return {centroids: centroids, clusters: clusterAssment, errors: errors};
   };
 });
