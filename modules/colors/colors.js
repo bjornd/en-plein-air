@@ -1,6 +1,19 @@
 YUI.add('colors', function (Y) {
   Y.Colors = {
-    getImagePalette: function(canvas){
+    getImagePalette: function(sourceCanvas, maxArea){
+      var canvas;
+
+      maxArea = maxArea || 1e4;
+
+      if (sourceCanvas.width * sourceCanvas.height > maxArea) {
+        canvas = Y.Node.create('<canvas></canvas>').getDOMNode();
+        canvas.width = Math.sqrt(maxArea * sourceCanvas.width / sourceCanvas.height);
+        canvas.height = sourceCanvas.height / sourceCanvas.width * canvas.width;
+        canvas.getContext('2d').drawImage(sourceCanvas, 0, 0, canvas.width, canvas.height);
+      } else {
+        canvas = sourceCanvas;
+      }
+
       console.time('kMeans');
       var result = biKMeans(getContextColors(canvas.getContext('2d')), 6);
       console.timeEnd('kMeans');
