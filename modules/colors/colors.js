@@ -15,7 +15,7 @@ YUI.add('colors', function (Y) {
       }
 
       console.time('kMeans');
-      var result = biKMeans(getContextColors(canvas.getContext('2d')), 6);
+      var result = biKMeans(getContextColors(canvas.getContext('2d')), 10, true);
       console.timeEnd('kMeans');
 
       result.centroids.sort(function(a, b){
@@ -88,7 +88,7 @@ YUI.add('colors', function (Y) {
     return sum;
   };
 
-  function biKMeans(data, k) {
+  function biKMeans(data, k, findBest) {
     var clusterAssment = [],
         i,
         j,
@@ -103,7 +103,12 @@ YUI.add('colors', function (Y) {
         bestCentToSplit,
         bestNewCents,
         bestClustAss,
-        bestErrors;
+        bestErrors,
+        centroidsDist,
+        minCentroidsDist = Number.POSITIVE_INFINITY,
+        metric,
+        bestMetric = Number.POSITIVE_INFINITY,
+        bestMetricData;
 
     centroids[0] = getMean(data);
     for (i = 0; i < data.length; i++) {
@@ -145,8 +150,30 @@ YUI.add('colors', function (Y) {
       }
       centroids[bestCentToSplit] = bestNewCents[0];
       centroids.push(bestNewCents[1]);
+
+      if (findBest) {
+        for (i = 0; i < centroids.length; i++) {
+          for (j = 0; j < centroids.length; j++) {
+            if (i != j) {
+              centroidsDist = getDistance(centroids[i], centroids[j]);
+              if (centroidsDist < minCentroidsDist) {
+                minCentroidsDist = centroidsDist;
+              }
+            }
+          }
+        }
+        metric = (getSum(errors) / errors.length) / minCentroidsDist;
+        if (metric < bestMetric) {
+          bestMetric = metric;
+          bestMetricData = {centroids: centroids.slice(), clusters: clusterAssment.slice(), errors: errors.slice()};
+        }
+      }
     }
-    return {centroids: centroids, clusters: clusterAssment, errors: errors};
+    if (findBest) {
+      return bestMetricData;
+    } else {
+      return {centroids: centroids, clusters: clusterAssment, errors: errors};
+    }
   };
 
   function kMeans(data, k) {
