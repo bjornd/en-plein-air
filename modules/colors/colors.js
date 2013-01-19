@@ -3,7 +3,7 @@ YUI.add('colors', function (Y) {
     getImagePalette: function(sourceCanvas, maxArea){
       var canvas;
 
-      maxArea = maxArea || 1e4;
+      maxArea = maxArea || 1e3;
 
       if (sourceCanvas.width * sourceCanvas.height > maxArea) {
         canvas = Y.Node.create('<canvas></canvas>').getDOMNode();
@@ -39,6 +39,7 @@ YUI.add('colors', function (Y) {
     return colors;
   };
 
+  //http://www.compuphase.com/cmetric.htm
   function getDistance(c1, c2) {
     var i,
         d = 0,
@@ -47,7 +48,6 @@ YUI.add('colors', function (Y) {
         g = c1[1] - c2[1],
         b = c1[2] - c2[2];
 
-    //http://www.compuphase.com/cmetric.htm
     return Math.sqrt( (((512+rmean)*r*r)>>8) + 4*g*g + (((767-rmean)*b*b)>>8) );
   };
 
