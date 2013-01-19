@@ -15,7 +15,7 @@ YUI.add('colors', function (Y) {
       }
 
       console.time('kMeans');
-      var result = biKMeans(getContextColors(canvas.getContext('2d')), 10, true);
+      var result = biKMeans(getContextColors(canvas.getContext('2d')), 8, true);
       console.timeEnd('kMeans');
 
       result.centroids.sort(function(a, b){
@@ -41,12 +41,14 @@ YUI.add('colors', function (Y) {
 
   function getDistance(c1, c2) {
     var i,
-        d = 0;
+        d = 0,
+        rmean = (c1[0] + c2[0]) / 2,
+        r = c1[0] - c2[0],
+        g = c1[1] - c2[1],
+        b = c1[2] - c2[2];
 
-    for (i = 0; i < c1.length; i++) {
-      d += (c2[i] - c1[i])*(c2[i] - c1[i]);
-    }
-    return Math.sqrt(d);
+    //http://www.compuphase.com/cmetric.htm
+    return Math.sqrt( (((512+rmean)*r*r)>>8) + 4*g*g + (((767-rmean)*b*b)>>8) );
   };
 
   function getMean(data) {
