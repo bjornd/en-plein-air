@@ -2,46 +2,52 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
   <title>En Plein Air</title>
-  <style>
-    * {
-      outline: none;
-    }
-  </style>
   <script src="http://kirills-macbook-pro.local:3000/seed"></script>
   <script src="yui.config.js"></script>
   <script src="yui.app.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body class="yui3-skin-sam">
+<body>
   <div id="app-menu">
     <div id="app-menu-buttons">
       <button class="radio" data-route="create">Create palette</button>
-      <button class="radio" data-route="history">History</button>
       <button class="radio" data-route="palettes">Palettes</button>
+      <button class="radio" data-route="about">About</button>
     </div>
   </div>
+
   <div id="app-content"></div>
 
   <script id="tpl-create-view" type="text/x-handlebars-template">
-    <img class="img"/>
-    <ul>
-      <li><label>Right from your camera <input value="Make shot" type="button" class="app-create-view-show-camera"/></label></li>
-      <li><label>From local file <input class="app-create-view-file-input" type="file"/></label></li>
-      <li>
-        <label>By image URL <input type="text" class="app-create-view-url" value="images/fish.jpeg"/></label>
-        <input value="Create palette" type="button" class="app-create-view-create-from-url"/>
+    <ul class="app-create-view-menu">
+      <li class="app-create-view-show-camera">
+        <div class="app-create-view-menu-icon" data-icon="&#xe00b;"></div>
+        <div>Camera</div>
+      </li>
+      <li class="app-create-view-from-file">
+        <div class="app-create-view-menu-icon" data-icon="&#xe029;"></div>
+        <div>Local file</div>
+        <input type="file" class="app-create-view-file-input"/>
+      </li>
+      <li class="app-create-view-from-url">
+        <div class="app-create-view-menu-icon" data-icon="&#xe01b;"></div>
+        <div>Image URL</div>
       </li>
     </ul>
-    <div class="app-create-view-palette">
-
-    </div>
+    <div class="app-create-view-palette"></div>
   </script>
 
   <script id="tpl-palette" type="text/x-handlebars-template">
-    <div>
-      <img src="{{image.url}}"/><br/>
+    <div class="palette">
+      <div class="palette-image-wrap">
+        <img class="palette-image" src="{{image.url}}"/>
+      </div>
       {{#colors}}
-        <div style="width: 50px; height: 50px; background: rgb({{.}}); display: inline-block"></div>
+        <div class="palette-sample {{brightnessClass this}}" style="background: rgb({{this}})">
+            {{colorToHex this}}
+        </div>
       {{/colors}}
     </div>
   </script>

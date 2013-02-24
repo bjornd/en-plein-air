@@ -1,0 +1,244 @@
+* {
+  outline: none;
+}
+
+body {
+    margin: 0;
+    background-color: #2e343e;
+    color: white;
+    font-family: Helvetica, sans-serif;
+}
+
+.clearer {
+    clear: both;
+}
+
+/* Buttons */
+
+#app-menu {
+    background-color: #00ce9b;
+}
+
+#app-menu .yui3-button {
+    margin: 0;
+    box-shadow: none;
+    background-image: none;
+    background-color: #00ce9b;
+    border-radius: 0;
+    border-left: 1px #009c75 solid;
+    font-size: 14px;
+    padding: 8px 16px 10px 16px;
+}
+
+#app-menu .yui3-button:hover {
+    background-image: none;
+}
+
+#app-menu .yui3-button:active {
+    box-shadow: none;
+    border-left: 1px #009c75 solid;
+}
+
+#app-menu .yui3-buttongroup-content {
+    text-align: center;
+    font-size: 0;
+}
+
+#app-menu .yui3-button:last-child {
+    border-right: 1px #009c75 solid;
+}
+
+/* Content styles */
+
+#app-content {
+    margin-top: 6px;
+}
+
+/* Create view */
+
+.app-create-view-menu {
+    text-align: center;
+    padding: 0;
+    margin: 0;
+}
+
+.app-create-view-menu li {
+    display: inline-block;
+    width: 150px;
+    height: 150px;
+    margin: 5px;
+    padding: 15px 5px 5px 5px;
+    cursor: pointer;
+}
+
+.app-create-view-show-camera {
+    background-color: #00bfca;
+}
+
+.app-create-view-from-file {
+    background-color: #345ba5;
+}
+
+.app-create-view-from-url {
+    background-color: #994195;
+}
+
+.app-create-view-menu-icon {
+    font-size: 110px;
+    line-height: 110px;
+    vertical-align: middle;
+}
+
+.app-create-view-file-input {
+    display: none;
+}
+
+.app-create-view-image-url-input {
+    width: 300px;
+    font-size: 16px;
+}
+
+/* Palette */
+
+.palette {
+  width: 508px;
+  margin: 10px auto 0 auto;
+}
+
+.palette-sample {
+  width: 90px;
+  height: 50px;
+  box-shadow: 0 0 1px black;
+  display: inline-block;
+  margin: 0 2px 6px 0;
+  line-height: 50px;
+  font-size: 12px;
+  text-align: center;
+}
+
+.palette-sample.dark-background {
+  color: white;
+}
+
+.palette-sample.bright-background {
+  color: black;
+}
+
+
+.palette-image-wrap {
+  width: 200px;
+  height: 200px;
+  float: left;
+  text-align: center;
+  margin-right: 10px;
+}
+
+/* Icon fonts */
+
+@font-face {
+    font-family: 'linecons';
+    src: url('fonts/linecons.woff');
+}
+
+[data-icon]:before {
+  font-family: 'linecons';
+  content: attr(data-icon);
+  speak: none;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Modal dialogs */
+
+.yui3-panel-content {
+    -webkit-box-shadow: 0 0 5px #333;
+    -moz-box-shadow: 0 0 5px #333;
+    box-shadow: 0 0 5px #333;
+    border: 1px solid black;
+    background: white;
+}
+
+.yui3-panel .yui3-widget-hd {
+    padding: 8px 28px 8px 8px;  /* Room for close button. */
+    min-height: 13px;           /* For the close button */
+    color: white;
+    background-color: #3961c5;
+    background: -moz-linear-gradient(
+        0% 100% 90deg,
+        #2647a0 7%,
+        #3d67ce 50%,
+        #426fd9 100%
+    );
+    background: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        from(#2647a0),
+        color-stop(0.07, #2647a0),
+        color-stop(0.5, #3d67ce),
+        to(#426fd9)
+    );
+}
+
+.yui3-panel .yui3-widget-hd .yui3-widget-buttons {
+    padding: 8px;
+}
+
+.yui3-panel .yui3-widget-bd {
+    padding: 10px;
+}
+
+.yui3-panel .yui3-widget-ft {
+  background: #EDF5FF;
+  padding: 8px;
+    text-align: right;
+}
+
+.yui3-panel .yui3-widget-ft .yui3-button {
+    margin-left: 8px;
+}
+
+.yui3-panel .yui3-widget-hd .yui3-button-close {
+    /* Reset base button styles */
+    background: transparent;
+    filter: none;
+    border: none;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+
+    /* Structure */
+    width: 13px;
+    height: 13px;
+    padding: 0;
+    overflow: hidden;
+    vertical-align: top;
+}
+
+.yui3-panel .yui3-widget-hd .yui3-button-close:before {
+    /*
+    Displays the [x] icon in place of the "Close" text.
+    Note: The `width` of this pseudo element is the same as its "host" element.
+    */
+    content: url(sprite_icons.png);
+    display: inline-block;
+    text-align: center;
+    font-size: 0;
+    line-height: 0;
+    width: 13px;
+    margin: 1px 0 0 1px;
+}
+
+.yui3-panel-hidden .yui3-widget-hd .yui3-button-close {
+    /* Required for IE > 7 to deal with pseudo :before element */
+    display: none;
+}
+
+.yui3-widget-mask {
+    background-color: black;
+    opacity: 0.4;
+}

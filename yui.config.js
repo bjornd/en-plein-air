@@ -6,7 +6,8 @@ YUI.GlobalConfig = {
         "template-view": {},
         "create-view": {},
         "camera-dialog": {},
-        "colors": {}
+        "colors": {},
+        "image-url-dialog": {}
       }
     }
   }

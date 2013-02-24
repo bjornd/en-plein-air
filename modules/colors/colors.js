@@ -14,9 +14,9 @@ YUI.add('colors', function (Y) {
         canvas = sourceCanvas;
       }
 
-      console.time('kMeans');
+      console.time('bikMeans');
       var result = biKMeans(getContextColors(canvas.getContext('2d')), 8, true);
-      console.timeEnd('kMeans');
+      console.timeEnd('bikMeans');
 
       result.centroids.sort(function(a, b){
         var av = a[0]*256*256 + a[1]*256 + a[2],
@@ -26,6 +26,14 @@ YUI.add('colors', function (Y) {
       });
 
       return result.centroids;
+    },
+
+    getColorBrightness: function(c){
+        return Math.sqrt(
+          c[0] * c[0] * .241 +
+          c[1] * c[1] * .691 +
+          c[2] * c[2] * .068
+        );
     }
   };
 

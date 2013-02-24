@@ -6,7 +6,7 @@ YUI({
   app = new Y.App({
     views: {
       create: {type: 'CreateView'},
-      history: {type: 'TemplateView'},
+      about: {type: 'TemplateView'},
       palettes: {type: 'TemplateView'},
       palette: {parent: 'palettes', type: 'TemplateView'}
     },
@@ -21,7 +21,6 @@ YUI({
   });
 
   app.render().navigate('/create');
-
 
   var buttonGroupRadio = new Y.ButtonGroup({
     srcNode: '#app-menu-buttons',

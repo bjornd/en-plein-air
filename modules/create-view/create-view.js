@@ -1,13 +1,22 @@
 YUI.add('create-view', function (Y) {
   Y.CreateView = Y.Base.create('CreateView', Y.View, [], {
-    maxImageWidth: 400,
-    maxImageHeight: 400,
+    maxImageWidth: 200,
+    maxImageHeight: 200,
 
     render: function () {
       var template = Y.Handlebars.compile( Y.one('#tpl-create-view').getHTML() ),
           container = this.get('container'),
           cameraDialog = new Y.CameraDialog(),
+          imageUrlDialog = new Y.ImageUrlDialog(),
           that = this;
+
+      Y.Handlebars.registerHelper('brightnessClass', function(){
+          return Y.Colors.getColorBrightness(this) > 130 ? ' bright-background' : 'dark-background';
+      });
+
+      Y.Handlebars.registerHelper('colorToHex', function(){
+          return Y.Color.toHex('rgb('+this.join(',')+')');
+      });
 
       this.paletteTemplate = Y.Handlebars.compile( Y.one('#tpl-palette').getHTML() );
 
@@ -19,14 +28,19 @@ YUI.add('create-view', function (Y) {
         });
       });
 
+      container.one('.app-create-view-from-file').on('click', function(){
+          container.one('.app-create-view-file-input').getDOMNode().click();
+      });
       container.one('.app-create-view-file-input').on('change', function(){
         var file = this.getDOMNode().files[0];
 
         that.createPaletteFromImageUrl( window.webkitURL.createObjectURL(file) );
       });
 
-      container.one('.app-create-view-create-from-url').on('click', function(){
-        that.createPaletteFromImageUrl( container.one('.app-create-view-url').get('value') );
+      container.one('.app-create-view-from-url').on('click', function(){
+        imageUrlDialog.show(function(imageUrl){
+            that.createPaletteFromImageUrl( imageUrl );
+        });
       });
 
       return this;
@@ -87,5 +101,5 @@ YUI.add('create-view', function (Y) {
     }
   });
 }, '0.0.1', {
-  requires: ['view', 'handlebars', 'camera-dialog', 'colors']
+  requires: ['view', 'handlebars', 'camera-dialog', 'image-url-dialog', 'colors', 'color']
 });
